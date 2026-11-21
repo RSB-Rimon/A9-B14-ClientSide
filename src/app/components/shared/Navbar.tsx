@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -20,9 +19,7 @@ export default function Navbar() {
 
   const user = session?.user;
   const userName = user?.name || "My Account";
-  const userRole = (
-    user as unknown as { role?: string } | undefined
-  )?.role;
+  const userRole = (user as unknown as { role?: string } | undefined)?.role;
 
   const handleSignOut = async () => {
     try {
@@ -111,10 +108,14 @@ export default function Navbar() {
                 </div>
 
                 <Link
-                  href="/customer/dashboard"
+                  href={
+                    userRole === "admin"
+                      ? "/admin/dashboard"
+                      : "/customer/dashboard"
+                  }
                   className="mt-2 block rounded-lg px-3 py-2.5 text-sm font-medium text-[#686159] transition hover:bg-[#f3eee7] hover:text-[#b58b57]"
                 >
-                  Dashboard
+                  {userRole === "admin" ? "Admin Dashboard" : "My Dashboard"}
                 </Link>
 
                 <button
@@ -203,13 +204,15 @@ export default function Navbar() {
                 </div>
 
                 <Link
-                  href="/dashboard"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="rounded-lg px-4 py-3 text-sm font-medium text-[#686159] transition hover:bg-[#f3eee7]"
+                  href={
+                    userRole === "admin"
+                      ? "/admin/dashboard"
+                      : "/customer/dashboard"
+                  }
+                  className="mt-2 block rounded-lg px-3 py-2.5 text-sm font-medium text-[#686159] transition hover:bg-[#f3eee7] hover:text-[#b58b57]"
                 >
-                  Dashboard
+                  {userRole === "admin" ? "Admin Dashboard" : "My Dashboard"}
                 </Link>
-
                 <button
                   type="button"
                   onClick={handleSignOut}
