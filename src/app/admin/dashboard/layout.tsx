@@ -23,7 +23,7 @@ const navItems = [
   },
   {
     label: "Manage Services",
-    href: "/admin/dashboard/services",
+    href:"/admin/dashboard/services",
     icon: Scissors,
   },
   {
