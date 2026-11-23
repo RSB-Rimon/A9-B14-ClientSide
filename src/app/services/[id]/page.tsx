@@ -6,8 +6,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Clock3, RefreshCw, Scissors } from "lucide-react";
 import { authClient } from "@/app/lib/auth-client";
-
-const API = "http://localhost:5000";
+import { API_BASE_URL } from "@/app/lib/api";
 
 type Service = {
   _id: string;
@@ -55,7 +54,7 @@ export default function ServiceDetailsPage() {
         setLoading(true);
         setError("");
 
-        const response = await fetch(`${API}/services`);
+        const response = await fetch(`${API_BASE_URL}/services`);
         const result = await response.json();
 
         if (!response.ok) {

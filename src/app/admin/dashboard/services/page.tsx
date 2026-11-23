@@ -19,8 +19,7 @@ import {
   Layers3,
 } from "lucide-react";
 import { authClient } from "@/app/lib/auth-client";
-
-const API = "http://localhost:5000";
+import { API_BASE_URL } from "@/app/lib/api";
 
 type Service = {
   _id: string;
@@ -72,7 +71,7 @@ export default function ManageServicesPage() {
       setLoading(true);
 
       const token = await getToken();
-      const response = await fetch(`${API}/admin/services`, {
+      const response = await fetch(`${API_BASE_URL}/admin/services`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -139,7 +138,7 @@ export default function ManageServicesPage() {
         const formData = new FormData();
         formData.append("image", image);
 
-        const uploadResponse = await fetch(`${API}/admin/upload-image`, {
+        const uploadResponse = await fetch(`${API_BASE_URL}/admin/upload-image`, {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
           body: formData,
@@ -168,8 +167,8 @@ export default function ManageServicesPage() {
       };
 
       const url = editingId
-        ? `${API}/admin/services/${editingId}`
-        : `${API}/admin/services`;
+        ? `${API_BASE_URL}/admin/services/${editingId}`
+        : `${API_BASE_URL}/admin/services`;
 
       const response = await fetch(url, {
         method: editingId ? "PATCH" : "POST",
@@ -225,7 +224,7 @@ export default function ManageServicesPage() {
     try {
       const token = await getToken();
 
-      const response = await fetch(`${API}/admin/services/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/admin/services/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -248,7 +247,7 @@ export default function ManageServicesPage() {
       const token = await getToken();
       const newStatus = service.status === "active" ? "inactive" : "active";
 
-      const response = await fetch(`${API}/admin/services/${service._id}`, {
+      const response = await fetch(`${API_BASE_URL}/admin/services/${service._id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

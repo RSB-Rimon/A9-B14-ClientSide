@@ -2,8 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-
-const API = "http://localhost:5000";
+import { API_BASE_URL } from "@/app/lib/api";
 
 export type SalonService = {
   _id: string;
@@ -38,7 +37,7 @@ export function useActiveServices(sort: ServiceSort = "") {
 
         const query = searchParams.toString();
         const response = await fetch(
-          `${API}/services${query ? `?${query}` : ""}`,
+          `${API_BASE_URL}/services${query ? `?${query}` : ""}`,
         );
         const result = await response.json();
 

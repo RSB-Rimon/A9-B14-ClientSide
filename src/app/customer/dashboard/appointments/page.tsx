@@ -12,8 +12,7 @@ import {
 } from "lucide-react";
 import { authClient } from "@/app/lib/auth-client";
 import { toast } from "sonner";
-
-const API = "http://localhost:5000";
+import { API_BASE_URL } from "@/app/lib/api";
 
 type Appointment = {
   _id: string;
@@ -72,7 +71,7 @@ export default function MyAppointmentsPage() {
       }
 
       const response = await fetch(
-        `${API}/appointments/${appointmentId}/create-checkout-session`,
+        `${API_BASE_URL}/appointments/${appointmentId}/create-checkout-session`,
         {
           method: "POST",
           headers: {
@@ -110,7 +109,7 @@ export default function MyAppointmentsPage() {
         throw new Error("Please sign in again.");
       }
 
-      const response = await fetch(`${API}/appointments`, {
+      const response = await fetch(`${API_BASE_URL}/appointments`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -147,7 +146,7 @@ export default function MyAppointmentsPage() {
       }
 
       const response = await fetch(
-        `${API}/appointments/${appointmentId}/cancel`,
+        `${API_BASE_URL}/appointments/${appointmentId}/cancel`,
         {
           method: "PATCH",
           headers: {

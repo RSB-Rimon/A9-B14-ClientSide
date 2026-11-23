@@ -15,9 +15,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { authClient } from "@/app/lib/auth-client";
-
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+import { API_BASE_URL } from "@/app/lib/api";
 
 const statsConfig = [
   {
@@ -134,7 +132,7 @@ export default function AdminDashboardPage() {
         throw new Error("Authentication failed. Please login again.");
       }
 
-      const response = await fetch(`${API_URL}/admin/dashboard/stats`, {
+      const response = await fetch(`${API_BASE_URL}/admin/dashboard/stats`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${tokenData.token}`,

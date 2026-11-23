@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Search, Scissors, Clock3, ArrowRight, RefreshCw } from "lucide-react";
 import Image from "next/image";
-
-const API = "http://localhost:5000";
+import { API_BASE_URL } from "@/app/lib/api";
 
 type Service = {
   _id: string;
@@ -30,7 +29,7 @@ export default function MyServicesPage() {
         setLoading(true);
         setError("");
 
-        const response = await fetch(`${API}/services`);
+        const response = await fetch(`${API_BASE_URL}/services`);
         const result = await response.json();
 
         if (!response.ok) {

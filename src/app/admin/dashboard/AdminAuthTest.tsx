@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { authClient } from "@/app/lib/auth-client";
+import { API_BASE_URL } from "@/app/lib/api";
 
 export default function AdminAuthTest() {
   const [loading, setLoading] = useState(false);
@@ -20,7 +21,7 @@ export default function AdminAuthTest() {
         return;
       }
 
-      const response = await fetch("http://localhost:5000/admin/test", {
+      const response = await fetch(`${API_BASE_URL}/admin/test`, {
         headers: {
           Authorization: `Bearer ${data.token}`,
         },

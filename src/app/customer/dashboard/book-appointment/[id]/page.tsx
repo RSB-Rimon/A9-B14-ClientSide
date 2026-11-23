@@ -15,8 +15,7 @@ import {
 } from "lucide-react";
 import { authClient } from "@/app/lib/auth-client";
 import { toast } from "sonner";
-
-const API = "http://localhost:5000";
+import { API_BASE_URL } from "@/app/lib/api";
 
 type Service = {
   _id: string;
@@ -59,7 +58,7 @@ export default function BookAppointmentPage() {
   useEffect(() => {
     async function getService() {
       try {
-        const response = await fetch(`${API}/services`);
+        const response = await fetch(`${API_BASE_URL}/services`);
         const result = await response.json();
 
         if (!response.ok) {
@@ -104,7 +103,7 @@ export default function BookAppointmentPage() {
         throw new Error("Please sign in again.");
       }
 
-      const response = await fetch(`${API}/appointments`, {
+      const response = await fetch(`${API_BASE_URL}/appointments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

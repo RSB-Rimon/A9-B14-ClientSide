@@ -6,8 +6,7 @@ import Image from "next/image";
 import { Search, Users, ShieldCheck, ShieldBan, Eye, RefreshCw } from "lucide-react";
 import { authClient } from "@/app/lib/auth-client";
 import { toast } from "sonner";
-
-const API_URL = "http://localhost:5000";
+import { API_BASE_URL } from "@/app/lib/api";
 
 type Customer = {
   _id: string;
@@ -45,7 +44,7 @@ export default function ManageUsersPage() {
       if (status !== "all") params.set("status", status);
 
       const response = await fetch(
-        `${API_URL}/admin/users?${params.toString()}`,
+        `${API_BASE_URL}/admin/users?${params.toString()}`,
         {
           headers: {
             Authorization: `Bearer ${data.token}`,
@@ -85,7 +84,7 @@ export default function ManageUsersPage() {
       const { data } = await authClient.token();
 
       const response = await fetch(
-        `${API_URL}/admin/users/${userId}/status`,
+        `${API_BASE_URL}/admin/users/${userId}/status`,
         {
           method: "PATCH",
           headers: {

@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { authClient } from "@/app/lib/auth-client";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/app/lib/api";
 import {
   CalendarDays,
   Clock,
@@ -50,7 +51,7 @@ export default function AppointmentsPage() {
       }
 
       const response = await fetch(
-        "http://localhost:5000/admin/appointments",
+        `${API_BASE_URL}/admin/appointments`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -98,7 +99,7 @@ export default function AppointmentsPage() {
       const token = data?.token;
 
       const response = await fetch(
-        `http://localhost:5000/admin/appointments/${id}/status`,
+        `${API_BASE_URL}/admin/appointments/${id}/status`,
         {
           method: "PATCH",
           headers: {
