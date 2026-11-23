@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 
 import { authClient } from "@/app/lib/auth-client";
+import GitHubAuthButton from "@/app/components/GitHubAuthButton";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -160,7 +161,7 @@ export default function SignUpPage() {
         return;
       }
 
-      router.replace("/");
+      router.replace("/auth/redirect");
       router.refresh();
     } catch {
       setServerError("Something went wrong. Please try again.");
@@ -364,6 +365,16 @@ export default function SignUpPage() {
                 )}
               </Button>
             </form>
+
+            <div className="my-6 flex items-center gap-3">
+              <span className="h-px flex-1 bg-stone-200" />
+              <span className="text-xs font-medium uppercase tracking-wider text-stone-400">
+                Or sign up with
+              </span>
+              <span className="h-px flex-1 bg-stone-200" />
+            </div>
+
+            <GitHubAuthButton disabled={isSubmitting} />
 
             <div className="mt-7 border-t border-stone-100 pt-6 text-center">
               <p className="text-sm text-stone-500">
