@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Clock3, RefreshCw, Scissors } from "lucide-react";
+import { authClient } from "@/app/lib/auth-client";
 
 const API = "http://localhost:5000";
 
@@ -21,11 +22,34 @@ type Service = {
 
 export default function ServiceDetailsPage() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
+  const { data: session, isPending: authPending } = authClient.useSession();
+  const userId = session?.user.id;
+  const userRole =
+    session?.user && "role" in session.user ? session.user.role : undefined;
   const [service, setService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (authPending) {
+      return;
+    }
+
+    if (!userId) {
+      router.replace("/sign-in");
+    } else if (userRole !== "customer") {
+      router.replace("/admin/dashboard");
+    }
+  }, [authPending, router, userId, userRole]);
+
+  useEffect(() => {
+    if (authPending || !userId || userRole !== "customer" || !id) {
+      return;
+    }
+
+    let active = true;
+
     const loadService = async () => {
       try {
         setLoading(true);
@@ -36,6 +60,10 @@ export default function ServiceDetailsPage() {
 
         if (!response.ok) {
           throw new Error(result.message || "Failed to load service.");
+        }
+
+        if (!active) {
+          return;
         }
 
         const found = (result.data || []).find(
@@ -49,16 +77,49 @@ export default function ServiceDetailsPage() {
 
         setService(found);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load service.");
+        if (active) {
+          setError(err instanceof Error ? err.message : "Failed to load service.");
+        }
       } finally {
-        setLoading(false);
+        if (active) {
+          setLoading(false);
+        }
       }
     };
 
-    if (id) {
-      void loadService();
-    }
-  }, [id]);
+    void loadService();
+
+    return () => {
+      active = false;
+    };
+  }, [authPending, id, userId, userRole]);
+
+  if (authPending || !userId) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center gap-3 text-[#77716a]">
+        <RefreshCw className="animate-spin" size={20} />
+        {authPending ? "Checking your account..." : "Redirecting to sign in..."}
+      </div>
+    );
+  }
+
+  if (userRole !== "customer") {
+    return (
+      <div className="mx-auto max-w-2xl rounded-2xl border border-[#eee5dd] bg-white p-8 text-center">
+        <p className="text-[#51473d]">
+          Admin accounts cannot book customer services. You are being redirected
+          to the admin dashboard.
+        </p>
+        <Link
+          href="/admin/dashboard"
+          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#29251f] px-5 py-3 text-sm font-semibold text-white"
+        >
+          Go to Admin Dashboard
+          <ArrowRight size={16} />
+        </Link>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
