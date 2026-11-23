@@ -1,7 +1,5 @@
 
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { auth } from "@/app/lib/auth";
+import { requireRole } from "@/app/lib/require-user";
 import CustomerSidebar from "./CustomerSidebar";
 
 export default async function CustomerDashboardLayout({
@@ -9,17 +7,7 @@ export default async function CustomerDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    redirect("/sign-in");
-  }
-
-  if (session.user.role !== "customer") {
-    redirect("/");
-  }
+  await requireRole("customer");
 
   return (
     <div className="min-h-screen bg-[#faf8f5] md:flex">

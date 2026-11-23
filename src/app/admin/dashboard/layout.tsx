@@ -1,10 +1,8 @@
 
 import Link from "next/link";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import { Home } from "lucide-react";
 
-import { auth } from "@/app/lib/auth";
+import { requireRole } from "@/app/lib/require-user";
 import AdminSidebar from "./AdminSidebar";
 
 export default async function AdminDashboardLayout({
@@ -12,17 +10,7 @@ export default async function AdminDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    redirect("/sign-in");
-  }
-
-  if (session.user.role !== "admin") {
-    redirect("/customer/dashboard");
-  }
+  await requireRole("admin");
 
   return (
     <div className="min-h-screen bg-slate-50">

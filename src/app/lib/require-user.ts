@@ -5,13 +5,16 @@ import { auth } from "@/app/lib/auth";
 type UserRole = "admin" | "customer";
 
 export async function requireUser() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await auth.api.getSession({
+    headers: await headers(),
+    query: { disableCookieCache: true },
+  });
 
   if (!session) {
     redirect("/sign-in");
   }
 
-  if (session.user.isBlocked) {
+  if (session.user.isBlocked === true) {
     redirect("/account-blocked");
   }
 
@@ -20,10 +23,17 @@ export async function requireUser() {
 
 export async function requireRole(requiredRole: UserRole) {
   const session = await requireUser();
-  const userRole: UserRole = session.user.role === "admin" ? "admin" : "customer";
 
-  if (userRole !== requiredRole) {
-    redirect(`/dashboard/${userRole}`);
+  if (session.user.role !== requiredRole) {
+    if (session.user.role === "admin") {
+      redirect("/admin/dashboard");
+    }
+
+    if (session.user.role === "customer") {
+      redirect("/customer/dashboard");
+    }
+
+    redirect("/");
   }
 
   return session;
