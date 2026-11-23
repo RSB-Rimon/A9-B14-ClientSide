@@ -1,5 +1,4 @@
-﻿
-"use client";
+﻿"use client";
 
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
@@ -14,8 +13,10 @@ import {
   Lock,
   Scissors,
   Loader2,
-  ArrowRight,
+  Calendar,
+  Clock,
   Sparkles,
+  Check,
 } from "lucide-react";
 
 import { authClient } from "@/app/lib/auth-client";
@@ -25,7 +26,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-// Validation
+// -------------------- Validation --------------------
+
 const signInSchema = z.object({
   email: z.string().trim().email("Enter a valid email address"),
   password: z.string().min(1, "Password is required"),
@@ -33,7 +35,8 @@ const signInSchema = z.object({
 
 type SignInFormValues = z.infer<typeof signInSchema>;
 
-// Reusable Field
+// -------------------- Reusable Field --------------------
+
 type FormFieldProps = {
   id: string;
   label: string;
@@ -60,13 +63,13 @@ function FormField({
   rightElement,
 }: FormFieldProps) {
   return (
-    <div className="space-y-2">
-      <Label htmlFor={id} className="text-sm font-medium text-stone-700">
+    <div className="space-y-1.5">
+      <Label htmlFor={id} className="text-[13px] font-medium text-[#41352f]">
         {label}
       </Label>
 
-      <div className="relative">
-        <span className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-stone-400">
+      <div className="group relative">
+        <span className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-[#b0a59c] transition-colors group-focus-within:text-[#a66d5c]">
           {icon}
         </span>
 
@@ -77,9 +80,13 @@ function FormField({
           autoComplete={autoComplete}
           disabled={disabled}
           aria-invalid={Boolean(error)}
-          className={`h-12 border-stone-200 bg-stone-50 pl-10 ${
+          className={`h-12 rounded-xl border bg-[#fcfaf8] pl-11 text-[14px] text-[#41352f] shadow-none transition-all placeholder:text-[#b9afa8] hover:border-[#d9cec5] focus-visible:border-[#a66d5c] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#a66d5c]/10 ${
             rightElement ? "pr-12" : "pr-4"
-          } ${error ? "border-red-400" : ""}`}
+          } ${
+            error
+              ? "border-red-300 bg-red-50/40 focus-visible:border-red-400 focus-visible:ring-red-100"
+              : "border-[#e7dfd8]"
+          }`}
           {...registration}
         />
 
@@ -90,14 +97,13 @@ function FormField({
         )}
       </div>
 
-      {error && (
-        <p className="text-xs font-medium text-red-500">{error}</p>
-      )}
+      {error && <p className="text-xs font-medium text-red-500">{error}</p>}
     </div>
   );
 }
 
-// Sign In Page
+// -------------------- Sign In Page --------------------
+
 export default function SignInPage() {
   const router = useRouter();
 
@@ -138,87 +144,137 @@ export default function SignInPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#faf8f5] px-4 py-10 sm:px-6">
-      <div className="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-xl shadow-stone-200/50 lg:grid-cols-2">
+    <main className="min-h-screen bg-[#faf8f5] px-4 py-6 sm:px-6 sm:py-10 lg:flex lg:items-center lg:justify-center">
+      <div className="mx-auto grid w-full max-w-[1080px] overflow-hidden rounded-[28px] border border-[#ebe4de] bg-white shadow-[0_30px_80px_-30px_rgba(61,43,32,0.18)] lg:grid-cols-[1fr_1.05fr]">
+        {/* ---------- Brand panel ---------- */}
 
-        {/* Left Side */}
-        <section className="relative hidden flex-col justify-between overflow-hidden bg-[#29251f] p-10 text-white lg:flex">
-          <div className="absolute -right-24 -top-24 size-80 rounded-full border border-white/10" />
-          <div className="absolute -right-12 -top-12 size-56 rounded-full border border-white/10" />
-          <div className="absolute -bottom-32 -left-20 size-80 rounded-full bg-amber-700/20 blur-3xl" />
+        <section className="relative m-3 hidden flex-col justify-between overflow-hidden rounded-[20px] bg-[#f1ece6] px-10 py-10 lg:flex xl:px-12">
+          <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-[#e8ddd2]/70" />
+          <div className="pointer-events-none absolute -bottom-32 -left-20 size-80 rounded-full bg-[#e9dfd5]/80" />
 
-          <Link href="/" className="relative z-10 flex items-center gap-3">
-            <span className="flex size-11 items-center justify-center rounded-xl bg-amber-600">
-              <Scissors className="size-6" />
+          <Link href="/" className="relative z-10 flex w-fit items-center gap-3">
+            <span className="flex size-10 items-center justify-center rounded-xl bg-[#49372f] text-white">
+              <Scissors className="size-[18px]" strokeWidth={1.7} />
             </span>
-            <span className="text-2xl font-bold">SalonBook</span>
+            <span className="text-[22px] font-semibold tracking-tight text-[#49372f]">
+              SalonBook
+            </span>
           </Link>
 
-          <div className="relative z-10 max-w-sm">
-            <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-2 text-xs font-medium text-amber-300">
-              <Sparkles className="size-4" />
-              Welcome back
-            </span>
-
-            <h2 className="text-4xl font-bold leading-tight tracking-tight">
-              Your next
-              <span className="block text-amber-400">
-                beauty experience
-              </span>
-              starts here.
+          <div className="relative z-10 py-10">
+            <h2 className="max-w-[360px] font-serif text-[40px] leading-[1.15] tracking-[-1px] text-[#49372f] xl:text-[44px]">
+              Welcome back. Your next visit is just ahead.
             </h2>
 
-            <p className="mt-5 text-sm leading-7 text-stone-300">
-              Sign in to manage your appointments, discover salon
-              services, and enjoy a seamless booking experience.
+            <p className="mt-4 max-w-[340px] text-[14px] leading-7 text-[#7d7068]">
+              Sign in to see your appointments, book a new service and
+              manage everything in one place.
             </p>
+
+            {/* Upcoming appointment slip */}
+            <div className="relative mt-10 w-full max-w-[330px]">
+              <div className="absolute inset-0 translate-x-2 translate-y-3 -rotate-3 rounded-2xl bg-[#e2d6ca]" />
+
+              <div className="relative rounded-2xl bg-white p-5 shadow-[0_20px_40px_-20px_rgba(73,55,47,0.4)]">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <span className="flex size-10 items-center justify-center rounded-full bg-[#f4e9e4] text-[#a66d5c]">
+                      <Sparkles className="size-[18px]" />
+                    </span>
+                    <div>
+                      <p className="text-[14px] font-semibold text-[#49372f]">
+                        Haircut and blow-dry
+                      </p>
+                      <p className="text-xs text-[#8e8178]">
+                        with Amina, senior stylist
+                      </p>
+                    </div>
+                  </div>
+
+                  <span className="rounded-full bg-[#f4e9e4] px-2.5 py-1 text-[11px] font-medium text-[#a66d5c]">
+                    Upcoming
+                  </span>
+                </div>
+
+                <div className="relative my-4 border-t border-dashed border-[#e3d9cf]">
+                  <span className="absolute -left-[30px] -top-2.5 size-5 rounded-full bg-[#f1ece6]" />
+                  <span className="absolute -right-[30px] -top-2.5 size-5 rounded-full bg-[#f1ece6]" />
+                </div>
+
+                <div className="flex items-center gap-6 text-[13px] text-[#5b4c44]">
+                  <span className="flex items-center gap-2">
+                    <Calendar className="size-4 text-[#a66d5c]" />
+                    Sat, 28 Nov
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <Clock className="size-4 text-[#a66d5c]" />
+                    11:30 AM
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <p className="relative z-10 text-xs text-stone-400">
-            © 2026 SalonBook. All rights reserved.
-          </p>
+          <ul className="relative z-10 space-y-3 text-[13px] text-[#6f625a]">
+            {[
+              "See and manage all your bookings",
+              "Reschedule or cancel in a couple of taps",
+            ].map((item) => (
+              <li key={item} className="flex items-center gap-3">
+                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[#49372f] text-white">
+                  <Check className="size-3" strokeWidth={3} />
+                </span>
+                {item}
+              </li>
+            ))}
+          </ul>
         </section>
 
-        {/* Right Side */}
-        <section className="flex items-center px-6 py-12 sm:px-10 lg:px-12">
-          <div className="mx-auto w-full max-w-md">
+        {/* ---------- Form panel ---------- */}
 
-            {/* Mobile Logo */}
+        <section className="flex items-center justify-center px-5 py-10 sm:px-10 sm:py-12 lg:px-12 xl:px-16">
+          <div className="w-full max-w-[400px]">
+            {/* Mobile brand */}
             <Link
               href="/"
-              className="mb-10 flex items-center gap-2 text-xl font-bold text-stone-900 lg:hidden"
+              className="mb-9 flex w-fit items-center gap-2.5 lg:hidden"
             >
-              <span className="flex size-9 items-center justify-center rounded-lg bg-amber-700 text-white">
-                <Scissors className="size-5" />
+              <span className="flex size-9 items-center justify-center rounded-xl bg-[#49372f] text-white">
+                <Scissors className="size-4" />
               </span>
-              SalonBook
+              <span className="text-xl font-semibold tracking-tight text-[#49372f]">
+                SalonBook
+              </span>
             </Link>
 
             <div className="mb-8">
-              <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-amber-700">
-                Welcome back
-              </p>
-
-              <h1 className="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
+              <h1 className="font-serif text-[34px] font-medium leading-tight tracking-[-0.8px] text-[#49372f] sm:text-[38px]">
                 Sign in to your account
               </h1>
-
-              <p className="mt-3 text-sm leading-6 text-stone-500">
-                Enter your credentials to continue.
+              <p className="mt-2.5 text-[14px] leading-6 text-[#8e8178]">
+                Enter your email and password to continue.
               </p>
+            </div>
+
+            <GitHubAuthButton disabled={isSubmitting} />
+
+            <div className="my-6 flex items-center gap-4">
+              <span className="h-px flex-1 bg-[#eee8e3]" />
+              <span className="text-xs text-[#a99e96]">or sign in with email</span>
+              <span className="h-px flex-1 bg-[#eee8e3]" />
             </div>
 
             <form
               onSubmit={handleSubmit(onSubmit)}
               noValidate
-              className="space-y-6"
+              className="space-y-4"
             >
               <FormField
                 id="email"
-                label="Email Address"
+                label="Email address"
                 placeholder="you@example.com"
                 type="email"
-                icon={<Mail className="size-4" />}
+                icon={<Mail className="size-[17px]" />}
                 registration={register("email")}
                 error={errors.email?.message}
                 autoComplete="email"
@@ -230,7 +286,7 @@ export default function SignInPage() {
                 label="Password"
                 placeholder="Enter your password"
                 type={showPassword ? "text" : "password"}
-                icon={<Lock className="size-4" />}
+                icon={<Lock className="size-[17px]" />}
                 registration={register("password")}
                 error={errors.password?.message}
                 autoComplete="current-password"
@@ -239,7 +295,7 @@ export default function SignInPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    className="text-stone-400 transition hover:text-stone-700"
+                    className="flex size-8 items-center justify-center rounded-lg text-[#a69a91] transition hover:bg-[#f1ece6] hover:text-[#49372f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a66d5c]/40"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? (
@@ -254,7 +310,7 @@ export default function SignInPage() {
               {serverError && (
                 <div
                   role="alert"
-                  className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
+                  className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-600"
                 >
                   {serverError}
                 </div>
@@ -263,7 +319,7 @@ export default function SignInPage() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="h-12 w-full rounded-xl bg-amber-700 text-sm font-semibold text-white shadow-md shadow-amber-700/15 transition hover:bg-amber-800"
+                className="h-12 w-full rounded-xl bg-[#49372f] text-[14px] font-semibold text-white shadow-[0_10px_24px_-10px_rgba(73,55,47,0.6)] transition-all hover:bg-[#5b463c] active:scale-[0.99] disabled:opacity-60"
               >
                 {isSubmitting ? (
                   <>
@@ -271,35 +327,20 @@ export default function SignInPage() {
                     Signing in...
                   </>
                 ) : (
-                  <>
-                    Sign In
-                    <ArrowRight className="ml-2 size-4" />
-                  </>
+                  "Sign in"
                 )}
               </Button>
             </form>
 
-            <div className="my-6 flex items-center gap-3">
-              <span className="h-px flex-1 bg-stone-200" />
-              <span className="text-xs font-medium uppercase tracking-wider text-stone-400">
-                Or continue with
-              </span>
-              <span className="h-px flex-1 bg-stone-200" />
-            </div>
-
-            <GitHubAuthButton disabled={isSubmitting} />
-
-            <div className="mt-8 border-t border-stone-100 pt-6 text-center">
-              <p className="text-sm text-stone-500">
-                Don@apost have an account?{" "}
-                <Link
-                  href="/sign-up"
-                  className="font-semibold text-amber-700 transition hover:text-amber-800 hover:underline"
-                >
-                  Create account
-                </Link>
-              </p>
-            </div>
+            <p className="mt-7 text-center text-[13px] text-[#93877f]">
+              Don’t have an account?{" "}
+              <Link
+                href="/sign-up"
+                className="font-semibold text-[#a66d5c] transition hover:text-[#49372f] hover:underline"
+              >
+                Create account
+              </Link>
+            </p>
           </div>
         </section>
       </div>
