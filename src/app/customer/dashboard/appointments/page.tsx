@@ -11,6 +11,7 @@ import {
   ClipboardList,
 } from "lucide-react";
 import { authClient } from "@/app/lib/auth-client";
+import { toast } from "sonner";
 
 const API = "http://localhost:5000";
 
@@ -56,6 +57,7 @@ export default function MyAppointmentsPage() {
   const [filter, setFilter] = useState("all");
 
   const [paymentLoadingId, setPaymentLoadingId] = useState<string | null>(null);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   async function handlePayment(appointmentId: string) {
     setPaymentLoadingId(appointmentId);
@@ -126,6 +128,47 @@ export default function MyAppointmentsPage() {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleCancel(appointmentId: string) {
+    if (!window.confirm("Cancel this pending appointment request?")) {
+      return;
+    }
+
+    setCancellingId(appointmentId);
+
+    try {
+      const tokenResult = await authClient.token();
+      const token = tokenResult.data?.token;
+
+      if (!token) {
+        throw new Error("Please sign in again.");
+      }
+
+      const response = await fetch(
+        `${API}/appointments/${appointmentId}/cancel`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Appointment cancellation failed.");
+      }
+
+      toast.success(result.message || "Appointment cancelled successfully.");
+      await fetchAppointments();
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Appointment cancellation failed.",
+      );
+    } finally {
+      setCancellingId(null);
     }
   }
 
@@ -343,6 +386,21 @@ export default function MyAppointmentsPage() {
                             ? "Loading..."
                             : "Pay Now"}
                         </button>
+                      ) : appointment.status?.toLowerCase() === "pending" ? (
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-xs text-[#817b73]">
+                            Awaiting Confirmation
+                          </span>
+                          <button
+                            onClick={() => handleCancel(appointment._id)}
+                            disabled={cancellingId === appointment._id}
+                            className="rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            {cancellingId === appointment._id
+                              ? "Cancelling..."
+                              : "Cancel"}
+                          </button>
+                        </div>
                       ) : (
                         <span className="text-xs text-[#817b73]">
                           {appointment.status?.toLowerCase() === "cancelled"
