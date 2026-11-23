@@ -1,36 +1,110 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SalonBook – Client
 
-## Getting Started
+SalonBook is a salon appointment booking platform built with Next.js and TypeScript. Customers can explore salon services, book appointments, track booking status, and make payments. Administrators can manage salon services, appointments, customers, and transactions through a dedicated dashboard.
 
-First, run the development server:
+## Live Website
+
+(https://salonbook-client-beryl.vercel.app/)
+
+## Features
+
+### Customer
+- Browse and search available salon services.
+- Explore services by category.
+- View service details, prices, and duration.
+- Submit appointment requests.
+- View appointment history and booking status.
+- Cancel pending appointment requests.
+- Pay for confirmed appointments using Stripe.
+- Manage personal profile.
+- Access a role-based customer dashboard.
+
+### Admin
+- Access a dedicated admin dashboard.
+- Add, update, and delete salon services.
+- Upload service images using ImgBB.
+- View and manage appointment requests.
+- Confirm or cancel appointments.
+- Manage registered customers.
+- View payment transactions.
+
+### Additional Features
+- Email and GitHub authentication with Better Auth.
+- Role-based dashboard access.
+- Responsive user interface.
+- Protected routes.
+- Stripe payment integration.
+- Environment-based configuration.
+
+## Technology Stack
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Better Auth
+- MongoDB
+- Express.js REST API
+- Stripe
+- ImgBB
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone <CLIENT_REPOSITORY_URL>
+```
+
+Navigate to the project directory:
+
+```bash
+cd salonbook-client
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+## Environment Variables
+
+Create a `.env.local` file in the project root and configure the following variables:
+
+```env
+NEXT_PUBLIC_API_URL=
+MONGODB_URI=
+BETTER_AUTH_URL=
+BETTER_AUTH_SECRET=
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+IMGBB_API_KEY=
+```
+
+Use your own credentials and URLs. Never commit `.env.local` or expose secret values.
+
+## Run Locally
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Related Repository
 
-## Learn More
+**Server Repository:** `<SERVER_REPOSITORY_URL>`
 
-To learn more about Next.js, take a look at the following resources:
+## Security
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Sensitive credentials are stored in environment variables.
+- Protected pages require authentication.
+- User access is controlled by roles.
+- Payment confirmation is handled through verified Stripe webhook events.
