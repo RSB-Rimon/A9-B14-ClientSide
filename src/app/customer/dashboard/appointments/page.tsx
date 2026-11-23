@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -56,6 +55,47 @@ export default function MyAppointmentsPage() {
   const [error, setError] = useState("");
   const [filter, setFilter] = useState("all");
 
+  const [paymentLoadingId, setPaymentLoadingId] = useState<string | null>(null);
+
+  async function handlePayment(appointmentId: string) {
+    setPaymentLoadingId(appointmentId);
+    setError("");
+
+    try {
+      const tokenResult = await authClient.token();
+      const token = tokenResult.data?.token;
+
+      if (!token) {
+        throw new Error("Please sign in again.");
+      }
+
+      const response = await fetch(
+        `${API}/appointments/${appointmentId}/create-checkout-session`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Payment could not be started.");
+      }
+
+      if (!result.url) {
+        throw new Error("Payment URL was not received.");
+      }
+
+      window.location.href = result.url;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Payment failed.");
+      setPaymentLoadingId(null);
+    }
+  }
+
   async function fetchAppointments() {
     setLoading(true);
     setError("");
@@ -83,9 +123,7 @@ export default function MyAppointmentsPage() {
 
       setAppointments(result.data || []);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Something went wrong."
-      );
+      setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -99,19 +137,19 @@ export default function MyAppointmentsPage() {
     filter === "all"
       ? appointments
       : appointments.filter(
-          (appointment) => appointment.status?.toLowerCase() === filter
+          (appointment) => appointment.status?.toLowerCase() === filter,
         );
 
   const pendingCount = appointments.filter(
-    (item) => item.status?.toLowerCase() === "pending"
+    (item) => item.status?.toLowerCase() === "pending",
   ).length;
 
   const confirmedCount = appointments.filter(
-    (item) => item.status?.toLowerCase() === "confirmed"
+    (item) => item.status?.toLowerCase() === "confirmed",
   ).length;
 
   const cancelledCount = appointments.filter(
-    (item) => item.status?.toLowerCase() === "cancelled"
+    (item) => item.status?.toLowerCase() === "cancelled",
   ).length;
 
   return (
@@ -244,6 +282,7 @@ export default function MyAppointmentsPage() {
                   <th className="px-5 py-4">Price</th>
                   <th className="px-5 py-4">Status</th>
                   <th className="px-5 py-4">Payment</th>
+                  <th className="px-5 py-4">Action</th>
                 </tr>
               </thead>
 
@@ -266,7 +305,7 @@ export default function MyAppointmentsPage() {
 
                     <td className="px-5 py-5 text-sm text-[#5f5952]">
                       {new Date(
-                        appointment.appointmentDate + "T00:00:00"
+                        appointment.appointmentDate + "T00:00:00",
                       ).toLocaleDateString("en-GB", {
                         day: "2-digit",
                         month: "short",
@@ -289,6 +328,29 @@ export default function MyAppointmentsPage() {
                     <td className="px-5 py-5">
                       <StatusBadge status={appointment.paymentStatus} />
                     </td>
+                    <td className="px-5 py-5">
+                      {appointment.paymentStatus?.toLowerCase() === "paid" ? (
+                        <span className="text-sm font-semibold text-green-600">
+                          Payment Complete
+                        </span>
+                      ) : appointment.status?.toLowerCase() === "confirmed" ? (
+                        <button
+                          onClick={() => handlePayment(appointment._id)}
+                          disabled={paymentLoadingId === appointment._id}
+                          className="rounded-lg bg-[#29251f] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#51473d] disabled:opacity-50"
+                        >
+                          {paymentLoadingId === appointment._id
+                            ? "Loading..."
+                            : "Pay Now"}
+                        </button>
+                      ) : (
+                        <span className="text-xs text-[#817b73]">
+                          {appointment.status?.toLowerCase() === "cancelled"
+                            ? "Not Available"
+                            : "Awaiting Confirmation"}
+                        </span>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -298,7 +360,8 @@ export default function MyAppointmentsPage() {
 
         <div className="border-t border-[#eee5dd] px-5 py-4">
           <p className="text-xs text-[#817b73]">
-            Showing {filteredAppointments.length} of {appointments.length} appointments
+            Showing {filteredAppointments.length} of {appointments.length}{" "}
+            appointments
           </p>
         </div>
       </div>
