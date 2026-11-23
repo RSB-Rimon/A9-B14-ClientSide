@@ -16,7 +16,9 @@ export type SalonService = {
   status: "active" | "inactive";
 };
 
-export function useActiveServices() {
+export type ServiceSort = "" | "price-asc" | "price-desc";
+
+export function useActiveServices(sort: ServiceSort = "") {
   const [services, setServices] = useState<SalonService[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -27,7 +29,17 @@ export function useActiveServices() {
 
     const loadServices = async () => {
       try {
-        const response = await fetch(`${API}/services`);
+        setLoading(true);
+        const searchParams = new URLSearchParams();
+
+        if (sort) {
+          searchParams.set("sort", sort);
+        }
+
+        const query = searchParams.toString();
+        const response = await fetch(
+          `${API}/services${query ? `?${query}` : ""}`,
+        );
         const result = await response.json();
 
         if (!response.ok) {
@@ -66,7 +78,7 @@ export function useActiveServices() {
     return () => {
       active = false;
     };
-  }, [attempt]);
+  }, [attempt, sort]);
 
   const retry = useCallback(() => {
     setLoading(true);
