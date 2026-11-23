@@ -29,6 +29,17 @@ export const auth = betterAuth({
     minPasswordLength: 6,
   },
 
+  user: {
+    additionalFields: {
+      isBlocked: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: false,
+      },
+    },
+  },
+
   socialProviders: {
     github: {
       clientId: process.env.GITHUB_CLIENT_ID as string,

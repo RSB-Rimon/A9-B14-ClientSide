@@ -14,6 +14,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { authClient } from "@/app/lib/auth-client";
+import { toast } from "sonner";
 
 const API = "http://localhost:5000";
 
@@ -123,7 +124,7 @@ export default function BookAppointmentPage() {
         throw new Error(result.message || "Booking failed.");
       }
 
-      alert("Appointment request submitted successfully!");
+      toast.success("Appointment request submitted successfully!");
       router.push("/customer/dashboard/appointments");
       router.refresh();
     } catch (err) {

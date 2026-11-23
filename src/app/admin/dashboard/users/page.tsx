@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { Search, Users, ShieldCheck, ShieldBan, Eye, RefreshCw } from "lucide-react";
 import { authClient } from "@/app/lib/auth-client";
+import { toast } from "sonner";
 
 const API_URL = "http://localhost:5000";
 
@@ -111,8 +112,12 @@ export default function ManageUsersPage() {
           isBlocked: !user.isBlocked,
         });
       }
+      toast.success(
+        result.message ||
+          `Customer ${user.isBlocked ? "unblocked" : "blocked"} successfully.`
+      );
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Something went wrong.");
+      toast.error(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setBusyId("");
     }

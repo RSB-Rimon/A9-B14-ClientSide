@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { authClient } from "@/app/lib/auth-client";
+import { toast } from "sonner";
 import {
   CalendarDays,
   Clock,
@@ -44,7 +45,7 @@ export default function AppointmentsPage() {
       const token = data?.token;
 
       if (!token) {
-        alert("Authentication token not found. Please login again.");
+        toast.error("Authentication token not found. Please login again.");
         return;
       }
 
@@ -66,7 +67,7 @@ export default function AppointmentsPage() {
       setAppointments(result.data || []);
     } catch (error) {
       console.error(error);
-      alert(
+      toast.error(
         error instanceof Error
           ? error.message
           : "Something went wrong"
@@ -114,14 +115,13 @@ export default function AppointmentsPage() {
         throw new Error(result.message || "Status update failed");
       }
 
+      toast.success(result.message);
       await fetchAppointments();
       if (selected?._id === id) {
         setSelected({ ...selected, status });
       }
-
-      alert(result.message);
     } catch (error) {
-      alert(
+      toast.error(
         error instanceof Error
           ? error.message
           : "Something went wrong"
